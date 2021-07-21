@@ -29,17 +29,13 @@ class CloudConnection(EventEmitter):
         self._cloudvariables = []
         self._timer = time.time()
         self._ws.connect(
-            "wss://clouddata.scratch.mit.edu",
+            "wss://clouddata.turbowarp.org",
             cookie="scratchsessionsid=" + self._client.session_id + ";",
             origin="https://scratch.mit.edu",
             enable_multithread=True,
         )  # connect the websocket
         self._send_packet(
-            {
-                "method": "handshake",
-                "user": self._client.username,
-                "project_id": str(self.project_id),
-            }
+            {"method": "handshake", "user": self._client.username, "project_id": str(self.project_id),}
         )
         self.emit("handshake")
         response = self._ws.recv().split("\n")
@@ -61,15 +57,7 @@ class CloudConnection(EventEmitter):
                     "Cloud variables can only be set to a combination of numbers"
                 )
             try:
-                packet = {
-                    "method": "set",
-                    "name": (
-                        "☁ " + variable if not variable.startswith("☁ ") else variable
-                    ),
-                    "value": str(value),
-                    "user": self._client.username,
-                    "project_id": str(self.project_id),
-                }
+                packet = {"method": "set", "name": ("☁ " + variable if not variable.startswith("☁ ") else variable), "value": str(value), "user": self._client.username, "project_id": str(self.project_id), }
                 self._send_packet(packet)
                 self.emit("outgoing", packet)
                 self._timer = time.time()
